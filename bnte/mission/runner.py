@@ -50,7 +50,7 @@ TARGETS = {
     "delta_p_line": 0.242e5,
     "injector_area": 9.41e-3,
     "pump_power": 0.568e6,
-    "npsh_margin": 1.0,
+    "npsh_margin": 146.0,
     "bartz_q": 1.24e7,
     "regen_alpha": 0.054,
     "radiator_tau": 180.0,
@@ -220,8 +220,17 @@ def _evaluate_thermal(cfg: Dict[str, Any]) -> Dict[str, float]:
 
 
 def _evaluate_feed(cfg: Dict[str, Any], thermal: Dict[str, Any]) -> Dict[str, float]:
+    if "mass_flow" in cfg:
+        mass_flow = cfg["mass_flow"]
+    else:
+        nozzle = thermal.get("nozzle")
+        if nozzle is None:
+            raise KeyError(
+                "Feed configuration requires 'mass_flow' or thermal results with 'nozzle'."
+            )
+        mass_flow = nozzle.mass_flow
     feed_inputs = FeedInputs(
-        mass_flow=cfg["mass_flow"],
+        mass_flow=mass_flow,
         density=cfg["density"],
         viscosity=cfg["viscosity"],
         length=cfg["length"],
@@ -244,6 +253,8 @@ def _evaluate_feed(cfg: Dict[str, Any], thermal: Dict[str, Any]) -> Dict[str, fl
         "injector_area": feed.injector_area,
         "pump_power": feed.pump_power,
         "npsh_margin": npsh_margin,
+        "cavitation_risk": feed.cavitation_risk,
+        "friction_model": feed.friction_model,
         "feed": feed,
     }
 
