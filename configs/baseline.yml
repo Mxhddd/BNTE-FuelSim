@@ -1,0 +1,133 @@
+masses:
+  m0: 35000.0
+  dry_payload: 11000.0
+  thermal_prop: 10000.0
+  m1: 25000.0
+  m1_effective: 24633.5
+
+thermal:
+  chamber_pressure: 1000000.0
+  chamber_temperature: 2168.0
+  gamma: 1.25
+  gas_constant: 4124.0
+  expansion_ratio: 60.0
+  mass_flow: 28.33202239
+  ambient_pressure: 0.0
+  cp: 16250.0
+  inlet_temperature: 40.0
+  gas_viscosity: 4.0e-05
+  prandtl: 0.7
+  wall_temperature: 750.0
+  radius_of_curvature: 0.04
+  coolant_split: 1.1
+  coolant_latent_heat: 445000.0
+  coolant_cp: 14000.0
+  coolant_inlet: 20.0
+  coolant_outlet: 300.0
+  throat_area_ref: 0.021
+  radiator_mass: 113.4
+  radiator_cp: 900.0
+  radiator_emissivity: 0.8
+  radiator_area: 25.0
+  radiator_temperature: 500.0
+
+feed:
+  density: 70.0
+  viscosity: 1.5e-05
+  length: 17.5
+  diameter: 0.18
+  roughness: 5.0e-06
+  minor_losses: [1.1, 0.7]
+  injector_cd: 0.75
+  injector_dp: 112000.0
+  pump_dp: 905000.0
+  pump_eff: 0.7
+  motor_eff: 0.92
+  tank_pressure: 234000.0
+  vapor_pressure: 110000.0
+  elevation: 1.0
+
+press:
+  tank_pressure: 234000.0
+  gas_temperature: 90.0
+  ullage_flow: 0.02
+  liquid_density: 70.0
+  liquid_mass_flow: 28.33202239
+  gas_constant: 4124.0
+
+ep:
+  power: 100000.0
+  thruster_efficiency: 0.6
+  ppu_efficiency: 0.95
+  specific_impulse: 3000.0
+  radiator_emissivity: 0.9005
+  radiator_temperature: 500.0
+  radiator_temperature_zbo: 450.0
+  segment_delta_v: 3000.0
+  initial_mass: 24959.6
+  plane_change_speed: 7600.0
+  plane_change_delta_i: 10.0
+
+cryo:
+  area: 235.1
+  heat_flux_base: 1.0
+  heat_flux_low: 0.3
+  cop: 0.01
+
+plume:
+  exponent: 2.32
+  reference_flux: 2.30064e5
+  reference_current: 9.22e-28
+  sputter_yield: 0.2
+  ion_energy: 300.0
+  keepout_angle: 75.0
+  keepout_radius: 10.0
+
+powerbus:
+  bus_voltage: 600.0
+  step_power: 100000.0
+  step_time: 0.1
+  resistor: 3.6
+  droop_voltage: 30.0
+
+plenum:
+  volume: 0.165
+  gas_constant: 4.124
+  chamber_temperature: 2168.0
+
+ep_trades:
+  - power: 50000.0
+    thruster_efficiency: 0.6
+    ppu_efficiency: 0.95
+    specific_impulse: 3000.0
+    radiator_emissivity: 0.9005
+    radiator_temperature: 500.0
+    segment_delta_v: 3000.0
+    initial_mass: 24959.6
+  - power: 100000.0
+    thruster_efficiency: 0.6
+    ppu_efficiency: 0.95
+    specific_impulse: 3000.0
+    radiator_emissivity: 0.9005
+    radiator_temperature: 500.0
+    segment_delta_v: 3000.0
+    initial_mass: 24959.6
+  - power: 200000.0
+    thruster_efficiency: 0.6
+    ppu_efficiency: 0.95
+    specific_impulse: 3000.0
+    radiator_emissivity: 0.9005
+    radiator_temperature: 500.0
+    segment_delta_v: 3000.0
+    initial_mass: 24959.6
+
+zbo_trades:
+  - area: 235.1
+    heat_flux: 1.0
+    cop: 0.01
+  - area: 235.1
+    heat_flux: 0.3
+    cop: 0.01
+  - area: 235.1
+    heat_flux: 0.1
+    cop: 0.01

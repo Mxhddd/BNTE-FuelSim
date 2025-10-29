@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bnte"
+version = "0.1.0"
+description = "BNTE digital twin analysis toolkit"
+authors = [{name = "BNTE Team"}]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+bnte = "bnte.cli:main"
