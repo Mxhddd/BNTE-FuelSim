@@ -29,6 +29,8 @@ from ..press.autogenous import PressurizationInputs, evaluate_pressurization
 from ..thermal.bartz import BartzInputs, evaluate_bartz
 from ..controller.sequence import PlenumInputs, evaluate_plenum, nominal_sequence
 from ..validate.harness import generate_validation_harness
+from ..render3d import generate_stage_assets
+from ..physics import PhysicsEngine
 
 
 @dataclass
@@ -609,10 +611,22 @@ def run_simulation(cfg_path: Path, outdir: Path | None = None) -> SimulationResu
         **powerbus,
         **plenum,
     }
+    summary_scalar = {k: v for k, v in summary.items() if isinstance(v, (int, float))}
     trades = _generate_trade_sweeps(outdir, cfg)
+    stage_cfg = cfg.data.get("stage3d", {}) if isinstance(cfg.data, dict) else {}
+    stage_outputs = generate_stage_assets(outdir, stage_cfg, summary_scalar)
+    stage_summary = stage_outputs.metadata.get("stage", {})
+    physics_engine = PhysicsEngine(outdir)
+    physics_result = physics_engine.simulate(stage_outputs.components)
     validation = generate_validation_harness()
 
-    summary_scalar = {k: v for k, v in summary.items() if isinstance(v, (int, float))}
+    summary_scalar.update(
+        {
+            "stage_mass": stage_summary.get("mass_total", 0.0),
+            "stage_cg_z": stage_summary.get("cg", (0.0, 0.0, 0.0))[2],
+        }
+    )
+    summary.update(summary_scalar)
     summary_rows = [summary_scalar]
     _write_csv(outdir / "summary.csv", summary_rows)
     for name, rows in trades.items():
@@ -628,8 +642,31 @@ def run_simulation(cfg_path: Path, outdir: Path | None = None) -> SimulationResu
     validation_path = outdir / "validation.json"
     validation_path.write_text(json.dumps(validation, indent=2), encoding="utf-8")
 
-    tables = {"summary": summary_rows, **trades}
-    metadata = {"output_dir": str(outdir), "config": str(cfg_path)}
+    trajectory_rows = [
+        {
+            "time": physics_result.times[idx],
+            "x": physics_result.positions[idx][0],
+            "y": physics_result.positions[idx][1],
+            "z": physics_result.positions[idx][2],
+            "vx": physics_result.velocities[idx][0],
+            "vy": physics_result.velocities[idx][1],
+            "vz": physics_result.velocities[idx][2],
+        }
+        for idx in range(len(physics_result.times))
+    ]
+    _write_csv(outdir / "physics_trajectory.csv", trajectory_rows)
+
+    tables = {"summary": summary_rows, "physics_trajectory": trajectory_rows, **trades}
+    metadata = {
+        "output_dir": str(outdir),
+        "config": str(cfg_path),
+        "stage": stage_outputs.metadata,
+        "physics": str(physics_result.output_path),
+    }
+
+    stage_summary = stage_outputs.metadata.get("stage", {})
+    summary.update(summary_scalar)
+
     return SimulationResults(summary=_summarize(summary), tables=tables, metadata=metadata)
 
 
